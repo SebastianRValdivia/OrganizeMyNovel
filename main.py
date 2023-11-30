@@ -62,7 +62,7 @@ def init_novel(novel_name: str):
 
     # Go to new dir and re-set the novel_dir
     os.chdir(novel_name)
-    novel_dir = os.getcwd()
+    global novel_dir = os.getcwd()
     # Init stuff
     _init_git()
     _init_settings()
