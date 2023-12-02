@@ -70,9 +70,10 @@ def init_novel(novel_name: str):
 def init_chapter():
     """Create a chapter by 1"""
     last_chapter = get_last_chapter()
-    print(last_chapter)
     try:
-        chapters_path = os.path.join(novel_dir, "chapters", str(int(last_chapter) + 1))
+        chapters_path = os.path.join(novel_dir, "chapters", str(
+            int(last_chapter) + 1)
+        )
         os.makedirs(chapters_path)
 
     except OSError as e:
