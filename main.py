@@ -9,11 +9,6 @@ settings: dict
 
 
 # MAIN FUNCTIONS
-def init_chapter(chapter_number: int):
-    chapter_dir = f"{novel_dir}/chapters/{chapter_number}/"
-    os.makedirs(chapter_dir)
-    print(f"Chapter {chapter_number} started")
-
 def init_scene(chapter_number:int, scene_number: int):
     scene_dir = f"{novel_dir}/chapters/{chapter_number}/{scene_number}/"
     os.makedirs(scene_dir)
@@ -72,6 +67,17 @@ def init_novel(novel_name: str):
     _init_first_chapter()
     _init_first_scene()
 
+def init_chapter():
+    """Create a chapter by 1"""
+    last_chapter = get_last_chapter()
+    print(last_chapter)
+    try:
+        chapters_path = os.path.join(novel_dir, "chapters", str(int(last_chapter) + 1))
+        os.makedirs(chapters_path)
+
+    except OSError as e:
+        print(f"Error: {e}")
+
 # UTILS
 def go_to_novel_dir():
     """Set the working directory back to the novel root dir"""
@@ -83,7 +89,7 @@ def get_last_scene():
 
 def get_last_chapter():
     """Retrieve the last chapter number"""
-    chapters_dir = "./chapters"  # Path to the chapters folder
+    chapters_dir = "./chapters"
 
     # Check if the chapters folder exists
     if not os.path.exists(chapters_dir) or not os.path.isdir(chapters_dir):
@@ -107,7 +113,7 @@ def get_last_chapter():
 
     if sorted_folders:
         # Return the folder with the highest number
-        return os.path.join(chapters_dir, sorted_folders[0])
+        return sorted_folders[0]
     else:
         print("No numbered folders found in the chapters directory.")
         return None
@@ -117,7 +123,6 @@ def load_settings():
     """
     Load the settings from the settings.yml file in the root of the novel dir
     """
-    settings = {}
     with open('./settings.yml', 'r') as settings_file:
         settings = yaml.safe_load(settings_file)
     
@@ -152,10 +157,8 @@ if __name__ == "__main__":
             init_scene()
         elif (args.task[0] == "nextchapter"):
             # Get last chapter
-            last_chapter = get_last_chapter()
-            print(last_chapter)
             # Init chapter
-            #init_chapter(get_last_chapter + 1)
+            init_chapter()
         else:
             raise Exception("Wrong command") 
 
