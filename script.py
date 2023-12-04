@@ -75,6 +75,7 @@ def init_chapter():
             int(last_chapter) + 1)
         )
         os.makedirs(chapters_path)
+        create_file(chapters_path, "meta.yml")
 
     except OSError as e:
         print(f"Error: {e}")
