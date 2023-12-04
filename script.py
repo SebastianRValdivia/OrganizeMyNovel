@@ -9,12 +9,12 @@ settings: dict
 
 
 # MAIN FUNCTIONS
-def init_scene(chapter_number:int, scene_number: int):
-    scene_dir = f"{novel_dir}/chapters/{chapter_number}/{scene_number}/"
-    os.makedirs(scene_dir)
-    os.chdir(scene_dir)
-    open("text.txt", "w").close()
-    open("meta.yml", "w").close()
+def init_scene():
+    last_chapter = get_last_chapter()
+    last_scene = get_last_scene_of_chapter(last_chapter)
+    scene_path = create_folder(f"./chapters/{last_chapter}/", str(last_scene+1))
+    create_file(scene_path, "text.txt")
+    create_file(scene_path, "meta.yml")
 
 def init_novel(novel_name: str):
     """
@@ -84,9 +84,48 @@ def go_to_novel_dir():
     """Set the working directory back to the novel root dir"""
     os.chdir(novel_dir)
 
-def get_last_scene():
+def get_last_scene_of_chapter(chapter_num: int):
     """Retrieve the chapter number and the scene number of the last scene"""
-    return [last_chapter_number, last_scene_number]
+    last_chapter_folder = f"./chapters/{chapter_num}/"
+    try:
+        os.chdir(last_chapter_folder)  # Change directory to the provided base folder
+
+        highest_folder_number = -1  # Initialize the highest folder number
+        folders = [folder for folder in os.listdir() if os.path.isdir(folder) and folder.isdigit()]
+        
+        # Iterate through the list of folders and find the highest numbered folder
+        for folder in folders:
+            folder_number = int(folder)
+            if folder_number > highest_folder_number:
+                highest_folder_number = folder_number
+
+        go_to_novel_dir()
+        return highest_folder_number
+
+    except OSError as e:
+        print(f"Error: {e}")
+        return None
+
+def create_folder(folder_path, folder_name):
+    try:
+        full_path = os.path.join(folder_path, folder_name)
+        os.makedirs(full_path)
+        print(f"Folder '{folder_name}' created successfully at '{folder_path}'.")
+        return full_path
+
+    except OSError as e:
+        print(f"Error: {e}")
+
+def create_file(file_path, file_name):
+    try:
+        full_file_path = os.path.join(file_path, file_name)
+        open(full_file_path, 'w').close()
+
+        print(f"File '{file_name}' created successfully at '{file_path}'.")
+        return full_file_path
+
+    except OSError as e:
+        print(f"Error: {e}")
 
 def get_last_chapter():
     """Retrieve the last chapter number"""
@@ -152,8 +191,6 @@ if __name__ == "__main__":
             except IndexError:
                 print("Missing novel name") 
         elif (args.task[0] == "andscene"): # Create a new scene
-            # Get last scene
-            last_scene = get_last_scene()
             # Init new scene
             init_scene()
         elif (args.task[0] == "nextchapter"):
